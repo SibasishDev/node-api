@@ -11,20 +11,28 @@ module.exports.getUsersWithPostCount = async (req, res) => {
         const data = await User.aggregate([
             {
                 $lookup: {
-                    from: "posts",
-                    foreignField: "userId",
-                    localField: "_id",
-                    as: "posts"
+                    from: 'posts',
+                    let: { user_id: "$_id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: ["$userId", "$$user_id"]
+                                }
+                            }
+                        }], as: "posts"
                 }
             },
             {
                 $project: {
-                    name: 1, last_name: 1,
-                    posts: { $size: "$posts" }
+                    _id: "$_id",
+                    name: 1,
+                    posts: {
+                        $size: "$posts"
+                    }
                 }
-            }
-        ]);
-        
+            }]);
+
         let resData;
         if (page && limit) {
             resData = {
