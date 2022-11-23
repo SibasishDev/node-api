@@ -33,7 +33,6 @@ module.exports.getUsersWithPostCount = async (req, res) => {
                     }
                 }
             }]).skip(offset).limit(limit);
-
         let resData;
         if (page && limit) {
             resData = {
@@ -45,10 +44,10 @@ module.exports.getUsersWithPostCount = async (req, res) => {
                         page: page,
                         totalPages: Math.floor(count / limit),
                         pagingCounter: page,
-                        hasPrevPage: page === 1 ? false : true,
-                        hasNextPage: page === Math.floor(count / limit) ? false : true,
-                        prevPage: page === 1 ? null : page - 1,
-                        nextPage: page === Math.floor(count / limit) ? null : page + 1
+                        hasPrevPage: page === 1 ? false : ((Math.floor(count / limit) < page) ? false : true),
+                        hasNextPage: page === Math.floor(count / limit) ? false : ((Math.floor(count / limit) < page) ? false : true),
+                        prevPage: page === 1 ? null : ((Math.floor(count / limit) < page) ? null : page - 1),
+                        nextPage: page === Math.floor(count / limit) ? null : ((Math.floor(count / limit) < page) ? null : page + 1)
                     }
                 }
             }
